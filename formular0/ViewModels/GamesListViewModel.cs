@@ -76,7 +76,11 @@ public class GamesListViewModel : ViewModelBase
         // přejde na detail hry — CommandParameter předá vybranou hru
         DetailCommand = new RelayCommand(obj =>
         {
-            if (obj is Game game) _nav.NavigateToDetail(game);
+            if (obj is Game game)
+            {
+                try { _nav.NavigateToDetail(game); }
+                catch (Exception ex) { DbError = $"Chyba při otevírání detailu: {ex.Message}"; }
+            }
         });
 
         // smaže hru z DB a odebere ji ze seznamu
@@ -84,10 +88,14 @@ public class GamesListViewModel : ViewModelBase
         {
             if (obj is Game game)
             {
-                _repo.Delete(game.Id);
-                _allGames.Remove(game); // odebere z lokálního seznamu
-                ApplyFilter();           // aktualizuje zobrazený seznam
-                UpdateStats();           // přepočítá statistiky
+                try
+                {
+                    _repo.Delete(game.Id);
+                    _allGames.Remove(game);
+                    ApplyFilter();
+                    UpdateStats();
+                }
+                catch (Exception ex) { DbError = $"Chyba při mazání: {ex.Message}"; }
             }
         });
 

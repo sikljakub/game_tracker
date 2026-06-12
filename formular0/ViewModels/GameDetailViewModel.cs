@@ -118,20 +118,21 @@ public class GameDetailViewModel : ViewModelBase
             AddError = "";
             if (NewPlayedOn == null) { AddError = "Datum je povinné."; return; }
             if (NewHours == null || NewHours <= 0) { AddError = "Počet hodin musí být větší než 0."; return; }
-
-            _sessionRepo.Add(new GameSession
+            try
             {
-                GameId = Game.Id,
-                PlayedOn = NewPlayedOn.Value,
-                HoursPlayed = NewHours.Value,
-                Note = NewNote
-            });
-
-            // resetuje formulář na výchozí hodnoty
-            NewPlayedOn = DateTime.Today;
-            NewHours = null;
-            NewNote = "";
-            Refresh(); // přenačte seznam a přepočítá statistiky
+                _sessionRepo.Add(new GameSession
+                {
+                    GameId = Game.Id,
+                    PlayedOn = NewPlayedOn.Value,
+                    HoursPlayed = NewHours.Value,
+                    Note = NewNote
+                });
+                NewPlayedOn = DateTime.Today;
+                NewHours = null;
+                NewNote = "";
+                Refresh();
+            }
+            catch (Exception ex) { AddError = $"Chyba: {ex.Message}"; }
         });
 
         // vyplní editační formulář hodnotami vybrané relace a zobrazí ho
@@ -140,10 +141,10 @@ public class GameDetailViewModel : ViewModelBase
             if (obj is not GameSession s) return;
             _editId = s.Id;
             EditPlayedOn = s.PlayedOn;
-            EditHours = (decimal?)s.HoursPlayed;
+            EditHours = s.HoursPlayed;
             EditNote = s.Note;
             EditError = "";
-            IsEditing = true; // zobrazí editační formulář v UI
+            IsEditing = true;
         });
 
         // uloží změny editované relace
@@ -152,18 +153,20 @@ public class GameDetailViewModel : ViewModelBase
             EditError = "";
             if (EditPlayedOn == null) { EditError = "Datum je povinné."; return; }
             if (EditHours == null || EditHours <= 0) { EditError = "Počet hodin musí být větší než 0."; return; }
-
-            _sessionRepo.Update(new GameSession
+            try
             {
-                Id = _editId,
-                GameId = Game.Id,
-                PlayedOn = EditPlayedOn.Value,
-                HoursPlayed = EditHours.Value,
-                Note = EditNote
-            });
-
-            IsEditing = false; // skryje editační formulář
-            Refresh();
+                _sessionRepo.Update(new GameSession
+                {
+                    Id = _editId,
+                    GameId = Game.Id,
+                    PlayedOn = EditPlayedOn.Value,
+                    HoursPlayed = EditHours.Value,
+                    Note = EditNote
+                });
+                IsEditing = false;
+                Refresh();
+            }
+            catch (Exception ex) { EditError = $"Chyba: {ex.Message}"; }
         });
 
         // smaže relaci
@@ -171,8 +174,8 @@ public class GameDetailViewModel : ViewModelBase
         {
             if (obj is GameSession s)
             {
-                _sessionRepo.Delete(s.Id);
-                Refresh();
+                try { _sessionRepo.Delete(s.Id); Refresh(); }
+                catch (Exception ex) { AddError = $"Chyba: {ex.Message}"; }
             }
         });
 
@@ -185,14 +188,22 @@ public class GameDetailViewModel : ViewModelBase
     // Přenačte seznam relací a přepočítá statistiky
     private void Refresh()
     {
-        Sessions.Clear();
-        foreach (var s in _sessionRepo.GetByGame(Game.Id))
-            Sessions.Add(s);
+        try
+        {
+            Sessions.Clear();
+            foreach (var s in _sessionRepo.GetByGame(Game.Id))
+                Sessions.Add(s);
 
-        // LINQ agregace přímo nad ObservableCollection
-        TotalHours = Sessions.Sum(s => s.HoursPlayed);
-        LastPlayed = Sessions.Count > 0
-            ? Sessions.Max(s => s.PlayedOn).ToString("dd.MM.yyyy")
-            : "–";
+            // LINQ agregace přímo nad ObservableCollection
+            TotalHours = Sessions.Sum(s => s.HoursPlayed);
+            LastPlayed = Sessions.Count > 0
+                ? Sessions.Max(s => s.PlayedOn).ToString("dd.MM.yyyy")
+                : "–";
+            AddError = "";
+        }
+        catch (Exception ex)
+        {
+            AddError = $"Chyba DB: {ex.Message}";
+        }
     }
 }
