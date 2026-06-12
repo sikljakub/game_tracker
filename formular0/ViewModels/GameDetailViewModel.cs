@@ -21,8 +21,8 @@ public class GameDetailViewModel : ViewModelBase
     public ObservableCollection<GameSession> Sessions { get; } = new();
 
     // --- Formulář pro přidání nové relace ---
-    private DateTimeOffset? _newPlayedOn = DateTimeOffset.Now; // výchozí = dnes
-    public DateTimeOffset? NewPlayedOn
+    private DateTime? _newPlayedOn = DateTime.Today; // výchozí = dnes
+    public DateTime? NewPlayedOn
     {
         get => _newPlayedOn;
         set => SetField(ref _newPlayedOn, value);
@@ -59,8 +59,8 @@ public class GameDetailViewModel : ViewModelBase
 
     private int _editId; // ID editované relace (neviditelné v UI)
 
-    private DateTimeOffset? _editPlayedOn;
-    public DateTimeOffset? EditPlayedOn
+    private DateTime? _editPlayedOn;
+    public DateTime? EditPlayedOn
     {
         get => _editPlayedOn;
         set => SetField(ref _editPlayedOn, value);
@@ -122,13 +122,13 @@ public class GameDetailViewModel : ViewModelBase
             _sessionRepo.Add(new GameSession
             {
                 GameId = Game.Id,
-                PlayedOn = NewPlayedOn.Value.DateTime,
+                PlayedOn = NewPlayedOn.Value,
                 HoursPlayed = NewHours.Value,
                 Note = NewNote
             });
 
             // resetuje formulář na výchozí hodnoty
-            NewPlayedOn = DateTimeOffset.Now;
+            NewPlayedOn = DateTime.Today;
             NewHours = null;
             NewNote = "";
             Refresh(); // přenačte seznam a přepočítá statistiky
@@ -139,7 +139,7 @@ public class GameDetailViewModel : ViewModelBase
         {
             if (obj is not GameSession s) return;
             _editId = s.Id;
-            EditPlayedOn = new DateTimeOffset(s.PlayedOn, TimeSpan.Zero);
+            EditPlayedOn = s.PlayedOn;
             EditHours = (decimal?)s.HoursPlayed;
             EditNote = s.Note;
             EditError = "";
@@ -157,7 +157,7 @@ public class GameDetailViewModel : ViewModelBase
             {
                 Id = _editId,
                 GameId = Game.Id,
-                PlayedOn = EditPlayedOn.Value.DateTime,
+                PlayedOn = EditPlayedOn.Value,
                 HoursPlayed = EditHours.Value,
                 Note = EditNote
             });

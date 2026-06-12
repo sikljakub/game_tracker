@@ -116,7 +116,8 @@
                         <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="16">
                             <StackPanel Grid.Column="0" Spacing="6">
                                 <TextBlock Text="DATUM" Classes="label"/>
-                                <DatePicker SelectedDate="{Binding NewPlayedOn}"/>
+                                <CalendarDatePicker SelectedDate="{Binding NewPlayedOn}"
+                                                    IsTodayHighlighted="True" Width="160"/>
                             </StackPanel>
                             <StackPanel Grid.Column="1" Spacing="6">
                                 <TextBlock Text="HODINY" Classes="label"/>
@@ -155,7 +156,8 @@
                         <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="16">
                             <StackPanel Grid.Column="0" Spacing="6">
                                 <TextBlock Text="DATUM" Classes="label"/>
-                                <DatePicker SelectedDate="{Binding EditPlayedOn}"/>
+                                <CalendarDatePicker SelectedDate="{Binding EditPlayedOn}"
+                                                    IsTodayHighlighted="True" Width="160"/>
                             </StackPanel>
                             <StackPanel Grid.Column="1" Spacing="6">
                                 <TextBlock Text="HODINY" Classes="label"/>
