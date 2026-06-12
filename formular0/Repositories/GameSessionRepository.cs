@@ -19,7 +19,7 @@ public class GameSessionRepository : IGameSessionRepository
     {
         using var conn = Connect();
         return conn.Query<GameSession>("""
-            SELECT id, game_id, played_on, hours_played, note
+            SELECT id, game_id, played_on::timestamp AS played_on, hours_played, note
             FROM game_sessions
             WHERE game_id = @gameId
             ORDER BY played_on DESC
