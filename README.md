@@ -12,30 +12,7 @@ Desktopová aplikace pro sledování her a herních relací. Napsaná v **Avalon
 
 ## ER Diagram
 
-```mermaid
-erDiagram
-    PLATFORMS {
-        int id PK
-        text name
-    }
-    GAMES {
-        int id PK
-        text title
-        int platform_id FK
-        int release_year
-        text note
-    }
-    GAME_SESSIONS {
-        int id PK
-        int game_id FK
-        date played_on
-        numeric hours_played
-        text note
-    }
-
-    PLATFORMS ||--o{ GAMES : "obsahuje"
-    GAMES ||--o{ GAME_SESSIONS : "má"
-```
+![ER Diagram](docs/db_diagram.svg)
 
 ## Technologie
 
