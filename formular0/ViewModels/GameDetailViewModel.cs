@@ -7,16 +7,21 @@ using formular0.Repositories;
 
 namespace formular0.ViewModels;
 
+// ViewModel pro detail hry (GameDetailView.axaml)
+// Zobrazuje info o hře, statistiky a seznam herních relací s možností CRUD
 public class GameDetailViewModel : ViewModelBase
 {
     private readonly MainWindowViewModel _nav;
     private readonly IGameSessionRepository _sessionRepo;
 
+    // hra jejíž detail zobrazujeme
     public Game Game { get; }
+
+    // seznam herních relací — ObservableCollection notifikuje UI při změnách
     public ObservableCollection<GameSession> Sessions { get; } = new();
 
-    // --- Add session form ---
-    private DateTimeOffset? _newPlayedOn = DateTimeOffset.Now;
+    // --- Formulář pro přidání nové relace ---
+    private DateTimeOffset? _newPlayedOn = DateTimeOffset.Now; // výchozí = dnes
     public DateTimeOffset? NewPlayedOn
     {
         get => _newPlayedOn;
@@ -44,15 +49,15 @@ public class GameDetailViewModel : ViewModelBase
         set => SetField(ref _addError, value);
     }
 
-    // --- Edit session form ---
-    private bool _isEditing;
+    // --- Formulář pro editaci existující relace ---
+    private bool _isEditing; // true = zobrazí editační formulář v UI
     public bool IsEditing
     {
         get => _isEditing;
         set => SetField(ref _isEditing, value);
     }
 
-    private int _editId;
+    private int _editId; // ID editované relace (neviditelné v UI)
 
     private DateTimeOffset? _editPlayedOn;
     public DateTimeOffset? EditPlayedOn
@@ -82,13 +87,21 @@ public class GameDetailViewModel : ViewModelBase
         set => SetField(ref _editError, value);
     }
 
-    public ICommand BackCommand { get; }
-    public ICommand EditGameCommand { get; }
-    public ICommand AddSessionCommand { get; }
-    public ICommand StartEditSessionCommand { get; }
-    public ICommand SaveSessionCommand { get; }
-    public ICommand DeleteSessionCommand { get; }
-    public ICommand CancelEditCommand { get; }
+    // --- Statistiky hry ---
+    private decimal _totalHours;
+    public decimal TotalHours { get => _totalHours; set => SetField(ref _totalHours, value); }
+
+    private string _lastPlayed = "–";
+    public string LastPlayed { get => _lastPlayed; set => SetField(ref _lastPlayed, value); }
+
+    // --- Příkazy ---
+    public ICommand BackCommand { get; }             // zpět na seznam
+    public ICommand EditGameCommand { get; }          // na formulář pro editaci hry
+    public ICommand AddSessionCommand { get; }        // přidá novou relaci
+    public ICommand StartEditSessionCommand { get; }  // zahájí editaci relace
+    public ICommand SaveSessionCommand { get; }       // uloží editovanou relaci
+    public ICommand DeleteSessionCommand { get; }     // smaže relaci
+    public ICommand CancelEditCommand { get; }        // zruší editaci
 
     public GameDetailViewModel(MainWindowViewModel nav, IGameSessionRepository sessionRepo, Game game)
     {
@@ -99,6 +112,7 @@ public class GameDetailViewModel : ViewModelBase
         BackCommand = new RelayCommand(_ => _nav.NavigateToList());
         EditGameCommand = new RelayCommand(_ => _nav.NavigateToForm(Game));
 
+        // přidá novou herní relaci
         AddSessionCommand = new RelayCommand(_ =>
         {
             AddError = "";
@@ -113,12 +127,14 @@ public class GameDetailViewModel : ViewModelBase
                 Note = NewNote
             });
 
+            // resetuje formulář na výchozí hodnoty
             NewPlayedOn = DateTimeOffset.Now;
             NewHours = null;
             NewNote = "";
-            Refresh();
+            Refresh(); // přenačte seznam a přepočítá statistiky
         });
 
+        // vyplní editační formulář hodnotami vybrané relace a zobrazí ho
         StartEditSessionCommand = new RelayCommand(obj =>
         {
             if (obj is not GameSession s) return;
@@ -127,9 +143,10 @@ public class GameDetailViewModel : ViewModelBase
             EditHours = (decimal?)s.HoursPlayed;
             EditNote = s.Note;
             EditError = "";
-            IsEditing = true;
+            IsEditing = true; // zobrazí editační formulář v UI
         });
 
+        // uloží změny editované relace
         SaveSessionCommand = new RelayCommand(_ =>
         {
             EditError = "";
@@ -145,10 +162,11 @@ public class GameDetailViewModel : ViewModelBase
                 Note = EditNote
             });
 
-            IsEditing = false;
+            IsEditing = false; // skryje editační formulář
             Refresh();
         });
 
+        // smaže relaci
         DeleteSessionCommand = new RelayCommand(obj =>
         {
             if (obj is GameSession s)
@@ -158,23 +176,20 @@ public class GameDetailViewModel : ViewModelBase
             }
         });
 
+        // skryje editační formulář bez uložení
         CancelEditCommand = new RelayCommand(_ => IsEditing = false);
 
-        Refresh();
+        Refresh(); // načte data při otevření detailu
     }
 
-    private decimal _totalHours;
-    public decimal TotalHours { get => _totalHours; set => SetField(ref _totalHours, value); }
-
-    private string _lastPlayed = "–";
-    public string LastPlayed { get => _lastPlayed; set => SetField(ref _lastPlayed, value); }
-
+    // Přenačte seznam relací a přepočítá statistiky
     private void Refresh()
     {
         Sessions.Clear();
         foreach (var s in _sessionRepo.GetByGame(Game.Id))
             Sessions.Add(s);
 
+        // LINQ agregace přímo nad ObservableCollection
         TotalHours = Sessions.Sum(s => s.HoursPlayed);
         LastPlayed = Sessions.Count > 0
             ? Sessions.Max(s => s.PlayedOn).ToString("dd.MM.yyyy")

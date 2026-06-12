@@ -5,6 +5,8 @@ using formular0.Models;
 
 namespace formular0.Repositories;
 
+// Implementace IPlatformRepository — čte platformy z databáze
+// Platformy jsou jen pro čtení (PC, PS5, Xbox...) — spravují se přes SQL seed
 public class PlatformRepository : IPlatformRepository
 {
     private readonly string _cs;
@@ -13,6 +15,7 @@ public class PlatformRepository : IPlatformRepository
 
     private NpgsqlConnection Connect() => new(_cs);
 
+    // Vrátí všechny platformy abecedně — používá se v ComboBoxu ve formuláři
     public List<Platform> GetAll()
     {
         using var conn = Connect();

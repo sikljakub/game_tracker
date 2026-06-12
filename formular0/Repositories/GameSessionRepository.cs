@@ -5,6 +5,7 @@ using formular0.Models;
 
 namespace formular0.Repositories;
 
+// Implementace IGameSessionRepository — přistupuje k tabulce game_sessions v PostgreSQL
 public class GameSessionRepository : IGameSessionRepository
 {
     private readonly string _cs;
@@ -13,6 +14,7 @@ public class GameSessionRepository : IGameSessionRepository
 
     private NpgsqlConnection Connect() => new(_cs);
 
+    // Vrátí všechny herní relace pro danou hru, seřazené od nejnovější
     public List<GameSession> GetByGame(int gameId)
     {
         using var conn = Connect();
@@ -24,6 +26,7 @@ public class GameSessionRepository : IGameSessionRepository
             """, new { gameId }).AsList();
     }
 
+    // Přidá novou herní relaci
     public void Add(GameSession session)
     {
         using var conn = Connect();
@@ -33,6 +36,7 @@ public class GameSessionRepository : IGameSessionRepository
             """, session);
     }
 
+    // Aktualizuje existující herní relaci (datum, hodiny, poznámka)
     public void Update(GameSession session)
     {
         using var conn = Connect();
@@ -43,6 +47,7 @@ public class GameSessionRepository : IGameSessionRepository
             """, session);
     }
 
+    // Smaže herní relaci podle ID
     public void Delete(int id)
     {
         using var conn = Connect();
