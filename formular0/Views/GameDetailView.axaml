@@ -214,7 +214,7 @@
                                     BorderBrush="#21262D" BorderThickness="1" Padding="20,14">
                                 <Grid ColumnDefinitions="130,90,*,170">
                                     <TextBlock Grid.Column="0"
-                                               Text="{Binding PlayedOn, StringFormat='dd.MM.yyyy'}"
+                                               Text="{Binding PlayedOnFormatted}"
                                                VerticalAlignment="Center" Foreground="#D1D5DB"
                                                FontSize="13"/>
                                     <StackPanel Grid.Column="1" Orientation="Horizontal"

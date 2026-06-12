@@ -123,7 +123,7 @@ public class GameDetailViewModel : ViewModelBase
                 _sessionRepo.Add(new GameSession
                 {
                     GameId = Game.Id,
-                    PlayedOn = NewPlayedOn.Value,
+                    PlayedOn = DateOnly.FromDateTime(NewPlayedOn.Value),
                     HoursPlayed = NewHours.Value,
                     Note = NewNote
                 });
@@ -140,7 +140,7 @@ public class GameDetailViewModel : ViewModelBase
         {
             if (obj is not GameSession s) return;
             _editId = s.Id;
-            EditPlayedOn = s.PlayedOn;
+            EditPlayedOn = s.PlayedOn.ToDateTime(TimeOnly.MinValue);
             EditHours = s.HoursPlayed;
             EditNote = s.Note;
             EditError = "";
@@ -159,7 +159,7 @@ public class GameDetailViewModel : ViewModelBase
                 {
                     Id = _editId,
                     GameId = Game.Id,
-                    PlayedOn = EditPlayedOn.Value,
+                    PlayedOn = DateOnly.FromDateTime(EditPlayedOn.Value),
                     HoursPlayed = EditHours.Value,
                     Note = EditNote
                 });
@@ -197,7 +197,7 @@ public class GameDetailViewModel : ViewModelBase
             // LINQ agregace přímo nad ObservableCollection
             TotalHours = Sessions.Sum(s => s.HoursPlayed);
             LastPlayed = Sessions.Count > 0
-                ? Sessions.Max(s => s.PlayedOn).ToString("dd.MM.yyyy")
+                ? Sessions.Max(s => s.PlayedOn).ToString("dd.MM.yyyy", null)
                 : "–";
             AddError = "";
         }
