@@ -1,7 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "PowerShell(git -C \"C:\\\\Users\\\\siklj\\\\RiderProjects\\\\formular0\" status 2>&1)"
-    ]
-  }
-}
