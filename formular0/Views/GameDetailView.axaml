@@ -1,0 +1,248 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="formular0.Views.GameDetailView"
+             x:Name="Root"
+             Background="#0D1117">
+
+    <DockPanel>
+
+        <!-- ══════════ HEADER / HERO ══════════ -->
+        <Border DockPanel.Dock="Top">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Color="#0D1117" Offset="0"/>
+                    <GradientStop Color="#1A0F2E" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+            <StackPanel Margin="28,20,28,24" Spacing="16">
+
+                <!-- Zpět + Upravit -->
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <Button Classes="ghost" Command="{Binding BackCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <TextBlock Text="←" FontSize="14"/>
+                            <TextBlock Text="Zpět na seznam"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Classes="secondary sm" Command="{Binding EditGameCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <TextBlock Text="✏"/>
+                            <TextBlock Text="Upravit hru"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+
+                <!-- Název hry -->
+                <StackPanel Spacing="6">
+                    <TextBlock Text="{Binding Game.Title}" Classes="h1" FontSize="30"/>
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <Border Background="#7C3AED22" CornerRadius="20" Padding="12,4"
+                                BorderBrush="#7C3AED44" BorderThickness="1">
+                            <TextBlock Text="{Binding Game.PlatformName}"
+                                       Foreground="#A78BFA" FontSize="13" FontWeight="Medium"/>
+                        </Border>
+                        <Border Background="#0F2A1E" CornerRadius="20" Padding="12,4"
+                                BorderBrush="#166534" BorderThickness="1"
+                                IsVisible="{Binding Game.ReleaseYear, Converter={x:Static ObjectConverters.IsNotNull}}">
+                            <TextBlock Text="{Binding Game.ReleaseYear, StringFormat='📅 {0}'}"
+                                       Foreground="#4ADE80" FontSize="13"/>
+                        </Border>
+                    </StackPanel>
+                </StackPanel>
+
+            </StackPanel>
+        </Border>
+
+        <ScrollViewer Padding="28,0,28,28">
+            <StackPanel Spacing="16">
+
+                <!-- ══════════ STAT KARTY ══════════ -->
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
+
+                    <Border Grid.Column="0" Background="#161B22" CornerRadius="12"
+                            BorderBrush="#21262D" BorderThickness="1" Padding="20,16">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="CELKEM HODIN" Classes="label"/>
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                <TextBlock Text="{Binding TotalHours, StringFormat='{}{0:0.#}'}"
+                                           FontSize="28" FontWeight="Bold" Foreground="#38BDF8"/>
+                                <TextBlock Text="h" FontSize="16" Foreground="#64748B"
+                                           VerticalAlignment="Bottom" Margin="0,0,0,3"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="1" Background="#161B22" CornerRadius="12"
+                            BorderBrush="#21262D" BorderThickness="1" Padding="20,16">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="POČET RELACÍ" Classes="label"/>
+                            <TextBlock Text="{Binding Sessions.Count}"
+                                       FontSize="28" FontWeight="Bold" Foreground="#A78BFA"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="2" Background="#161B22" CornerRadius="12"
+                            BorderBrush="#21262D" BorderThickness="1" Padding="20,16">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="NAPOSLEDY HRÁNO" Classes="label"/>
+                            <TextBlock Text="{Binding LastPlayed}" FontSize="18"
+                                       FontWeight="Bold" Foreground="#4ADE80"/>
+                        </StackPanel>
+                    </Border>
+
+                </Grid>
+
+                <!-- Poznámka hry -->
+                <Border Background="#161B22" CornerRadius="12" Padding="20,14"
+                        BorderBrush="#21262D" BorderThickness="1"
+                        IsVisible="{Binding Game.Note, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="POZNÁMKA" Classes="label"/>
+                        <TextBlock Text="{Binding Game.Note}" Foreground="#D1D5DB"
+                                   FontSize="14" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- ══════════ PŘIDAT RELACI ══════════ -->
+                <Border Background="#161B22" CornerRadius="12" Padding="22"
+                        BorderBrush="#21262D" BorderThickness="1">
+                    <StackPanel Spacing="16">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="＋" Foreground="#7C3AED" FontSize="16"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text="Přidat herní relaci" Classes="h2"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="16">
+                            <StackPanel Grid.Column="0" Spacing="6">
+                                <TextBlock Text="DATUM" Classes="label"/>
+                                <DatePicker SelectedDate="{Binding NewPlayedOn}"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Spacing="6">
+                                <TextBlock Text="HODINY" Classes="label"/>
+                                <NumericUpDown Value="{Binding NewHours}" Width="140"
+                                               Minimum="0" Increment="0.5" FormatString="0.##"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2" Spacing="6">
+                                <TextBlock Text="POZNÁMKA" Classes="label"/>
+                                <TextBox Text="{Binding NewNote}" Watermark="Co jsi hrál/a..."/>
+                            </StackPanel>
+                        </Grid>
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Button Classes="primary" Command="{Binding AddSessionCommand}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="＋"/>
+                                    <TextBlock Text="Přidat relaci"/>
+                                </StackPanel>
+                            </Button>
+                            <TextBlock Text="{Binding AddError}" Classes="error"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- ══════════ EDITACE RELACE ══════════ -->
+                <Border Background="#0F1A2E" CornerRadius="12" Padding="22"
+                        BorderBrush="#1E40AF" BorderThickness="1"
+                        IsVisible="{Binding IsEditing}">
+                    <StackPanel Spacing="16">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="✏" Foreground="#60A5FA" FontSize="16"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text="Upravit relaci" Classes="h2"
+                                       Foreground="#93C5FD" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="16">
+                            <StackPanel Grid.Column="0" Spacing="6">
+                                <TextBlock Text="DATUM" Classes="label"/>
+                                <DatePicker SelectedDate="{Binding EditPlayedOn}"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Spacing="6">
+                                <TextBlock Text="HODINY" Classes="label"/>
+                                <NumericUpDown Value="{Binding EditHours}" Width="140"
+                                               Minimum="0" Increment="0.5" FormatString="0.##"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2" Spacing="6">
+                                <TextBlock Text="POZNÁMKA" Classes="label"/>
+                                <TextBox Text="{Binding EditNote}"/>
+                            </StackPanel>
+                        </Grid>
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Button Classes="primary" Command="{Binding SaveSessionCommand}"
+                                    Content="Uložit změny"/>
+                            <Button Classes="secondary" Command="{Binding CancelEditCommand}"
+                                    Content="Zrušit"/>
+                            <TextBlock Text="{Binding EditError}" Classes="error"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- ══════════ SEZNAM RELACÍ ══════════ -->
+                <TextBlock Text="Historie relací" Classes="h2" Margin="0,4,0,0"/>
+
+                <!-- Prázdný stav -->
+                <Border Background="#161B22" CornerRadius="12" Padding="40"
+                        BorderBrush="#21262D" BorderThickness="1"
+                        IsVisible="{Binding !Sessions.Count}">
+                    <StackPanel HorizontalAlignment="Center" Spacing="8">
+                        <TextBlock Text="🕹" FontSize="40" HorizontalAlignment="Center" Opacity="0.2"/>
+                        <TextBlock Text="Zatím žádné relace" Foreground="#374151"
+                                   HorizontalAlignment="Center" FontSize="15"/>
+                        <TextBlock Text="Přidej první herní relaci výše."
+                                   Classes="muted" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Záhlaví relací -->
+                <Border Padding="20,8" Background="#0D1117" CornerRadius="8"
+                        IsVisible="{Binding Sessions.Count}">
+                    <Grid ColumnDefinitions="130,90,*,170">
+                        <TextBlock Grid.Column="0" Text="DATUM"    Classes="label"/>
+                        <TextBlock Grid.Column="1" Text="HODINY"   Classes="label"/>
+                        <TextBlock Grid.Column="2" Text="POZNÁMKA" Classes="label"/>
+                        <TextBlock Grid.Column="3" Text="AKCE"     Classes="label"/>
+                    </Grid>
+                </Border>
+
+                <ItemsControl ItemsSource="{Binding Sessions}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Margin="0,0,0,2" Background="#161B22" CornerRadius="10"
+                                    BorderBrush="#21262D" BorderThickness="1" Padding="20,14">
+                                <Grid ColumnDefinitions="130,90,*,170">
+                                    <TextBlock Grid.Column="0"
+                                               Text="{Binding PlayedOn, StringFormat='dd.MM.yyyy'}"
+                                               VerticalAlignment="Center" Foreground="#D1D5DB"
+                                               FontSize="13"/>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal"
+                                                Spacing="3" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding HoursPlayed}"
+                                                   FontSize="15" FontWeight="Bold"
+                                                   Foreground="#38BDF8"/>
+                                        <TextBlock Text="h" FontSize="12" Foreground="#4B5563"
+                                                   VerticalAlignment="Bottom" Margin="0,0,0,1"/>
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="2" Text="{Binding Note}"
+                                               VerticalAlignment="Center" Foreground="#9CA3AF"
+                                               FontSize="13" TextWrapping="Wrap"/>
+                                    <StackPanel Grid.Column="3" Orientation="Horizontal"
+                                                Spacing="8" VerticalAlignment="Center">
+                                        <Button Classes="secondary sm" Content="Upravit"
+                                                Command="{Binding DataContext.StartEditSessionCommand, ElementName=Root}"
+                                                CommandParameter="{Binding}"/>
+                                        <Button Classes="danger sm" Content="Smazat"
+                                                Command="{Binding DataContext.DeleteSessionCommand, ElementName=Root}"
+                                                CommandParameter="{Binding}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+            </StackPanel>
+        </ScrollViewer>
+
+    </DockPanel>
+</UserControl>

@@ -1,0 +1,16 @@
+# Build output
+bin/
+obj/
+
+# IDE
+.idea/
+.vs/
+*.user
+*.suo
+
+# Environment (obsahuje hesla!)
+.env
+
+# OS
+.DS_Store
+Thumbs.db

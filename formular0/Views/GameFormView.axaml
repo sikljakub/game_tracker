@@ -1,0 +1,106 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="formular0.Views.GameFormView"
+             Background="#0D1117">
+
+    <Grid ColumnDefinitions="*,580,*" RowDefinitions="*,Auto,*">
+
+        <ScrollViewer Grid.Column="1" Grid.Row="1">
+            <StackPanel Spacing="0" Margin="0,40,0,40">
+
+                <!-- Nadpis -->
+                <StackPanel Spacing="6" Margin="0,0,0,28">
+                    <TextBlock Text="{Binding FormTitle}" Classes="h1"/>
+                    <TextBlock Classes="muted" Text="Uprav údaje o hře."
+                               IsVisible="{Binding IsEdit}"/>
+                    <TextBlock Classes="muted" Text="Vyplň informace o nové hře."
+                               IsVisible="{Binding !IsEdit}"/>
+                </StackPanel>
+
+                <!-- Karta formuláře -->
+                <Border Background="#161B22" CornerRadius="16"
+                        BorderBrush="#21262D" BorderThickness="1" Padding="32">
+                    <StackPanel Spacing="22">
+
+                        <!-- Název hry -->
+                        <StackPanel Spacing="8">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <TextBlock Text="Název hry" FontSize="14"
+                                           FontWeight="Medium" Foreground="#E5E7EB"/>
+                                <TextBlock Text="*" Foreground="#7C3AED" FontWeight="Bold"/>
+                            </StackPanel>
+                            <TextBox Text="{Binding GameTitle}"
+                                     Watermark="např. The Witcher 3, Cyberpunk 2077..."/>
+                        </StackPanel>
+
+                        <!-- Platforma -->
+                        <StackPanel Spacing="8">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <TextBlock Text="Platforma" FontSize="14"
+                                           FontWeight="Medium" Foreground="#E5E7EB"/>
+                                <TextBlock Text="*" Foreground="#7C3AED" FontWeight="Bold"/>
+                            </StackPanel>
+                            <ComboBox ItemsSource="{Binding Platforms}"
+                                      SelectedItem="{Binding SelectedPlatform}"
+                                      PlaceholderText="Vyber platformu..."
+                                      HorizontalAlignment="Stretch">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name}" FontSize="14"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <!-- Rok vydání -->
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Rok vydání" FontSize="14"
+                                       FontWeight="Medium" Foreground="#E5E7EB"/>
+                            <TextBox Text="{Binding ReleaseYear}"
+                                     Watermark="např. 2015  (volitelné)"/>
+                        </StackPanel>
+
+                        <!-- Poznámka -->
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Poznámka" FontSize="14"
+                                       FontWeight="Medium" Foreground="#E5E7EB"/>
+                            <TextBox Text="{Binding Note}"
+                                     Watermark="Krátký popis, žánr, hodnocení..."
+                                     AcceptsReturn="True" Height="96"/>
+                        </StackPanel>
+
+                        <!-- Oddělovač -->
+                        <Border Background="#21262D" Height="1" Margin="0,4"/>
+
+                        <!-- Chyba -->
+                        <Border Background="#1F0909" CornerRadius="8" Padding="14,10"
+                                BorderBrush="#7F1D1D" BorderThickness="1"
+                                IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <TextBlock Text="⚠" Foreground="#F87171"/>
+                                <TextBlock Text="{Binding Error}" Classes="error"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Tlačítka -->
+                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+                            <Button Grid.Column="1" Classes="secondary"
+                                    Command="{Binding CancelCommand}" Content="Zrušit"/>
+                            <Button Grid.Column="2" Classes="primary"
+                                    Command="{Binding SaveCommand}" Padding="24,9">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="✓"/>
+                                    <TextBlock Text="Uložit změny" IsVisible="{Binding IsEdit}"/>
+                                    <TextBlock Text="Přidat hru"   IsVisible="{Binding !IsEdit}"/>
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
